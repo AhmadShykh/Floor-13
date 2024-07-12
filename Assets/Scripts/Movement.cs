@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Xml.Serialization;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEditor.Compilation;
 using UnityEditor.EditorTools;
 using UnityEditor.Rendering;
@@ -23,7 +24,6 @@ public class Movement : MonoBehaviour
 
 	[Header("Movement Settings")]
 	[SerializeField] float speed;
-    [SerializeField] CharacterController characterController;
     [SerializeField] float y;
 
     [Header("Animation Settings")]
@@ -51,14 +51,14 @@ public class Movement : MonoBehaviour
 		float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
         
 		// Movement
-		float xAxis = Input.GetAxis("Horizontal") * Time.deltaTime;
-		float yAxis= Input.GetAxis("Vertical") * Time.deltaTime;
+		float xAxis = Input.GetAxis("Horizontal") ;
+		float yAxis= Input.GetAxis("Vertical") ;
 
         _xRotation -= mouseY;
         _yRotation += mouseX;
 
         _yRotation = WrapAngle(_yRotation);
-        _xRotation = Mathf.Clamp(_xRotation,-xDegree,70);
+        _xRotation = Mathf.Clamp(_xRotation,-xDegree,50);
 
         // Head Movement
 		head.transform.localRotation = Quaternion.Euler(_xRotation, _yRotation, 0);
@@ -80,11 +80,15 @@ public class Movement : MonoBehaviour
 		
 		float strafeHeadAngleDiff = Mathf.Abs(head.transform.rotation.eulerAngles.y - strafeAngle );
 
-		if(strafeHeadAngleDiff > 100 && strafeHeadAngleDiff < 260)
+		float forceValue = movement.magnitude;
+		
+		if (strafeHeadAngleDiff > 100 && strafeHeadAngleDiff < 260)
 		{
+			forceValue *= -1;
 			strafeAngle = Mathf.Rad2Deg * Mathf.Atan2(-movement.x,- movement.z);
 		}
 
+		characterAnimator.SetFloat("Blend", forceValue);
 
 		if (xAxis != 0 || yAxis != 0)
 			_strafeRotation = Quaternion.Euler(0, strafeAngle, 0);
@@ -120,6 +124,7 @@ public class Movement : MonoBehaviour
 
 		body.transform.rotation = Quaternion.Slerp(body.transform.rotation, targetRotation, Time.deltaTime * rotationSpeed);
 
+	
 	}
 
 

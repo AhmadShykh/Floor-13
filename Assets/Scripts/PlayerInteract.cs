@@ -33,8 +33,9 @@ public class PlayerInteract : MonoBehaviour
 		if (Physics.Raycast(torchRay, out RaycastHit objHit, _raycastLength))
 		{
 			GameObject hitGameobject = objHit.collider.gameObject;
-			if(hitGameobject.tag == "HidingObject" || hitGameobject.tag == "Battery")
+			if(hitGameobject.tag == "HidingObject" || hitGameobject.tag == "Battery" || hitGameobject.tag == "Collectables")
 			{
+				//Debug.Log($"Object Collided with: {hitGameobject.tag}");
 				if (hitGameobject.tag == "Battery")
 				{
 					hitGameobject.GetComponent<Renderer>().material.color = Color.yellow;

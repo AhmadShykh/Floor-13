@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Battery
   - HidingObject
+  - Collectables
+  - TextCanvas
   layers:
   - Default
   - TransparentFX

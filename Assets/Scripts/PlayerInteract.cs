@@ -1,9 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.PlasticSCM.Editor.WebApi;
 using Unity.VisualScripting;
 using UnityEditor.MPE;
 using UnityEngine;
+using UnityEngine.Rendering.UI;
 using UnityEngine.Rendering.Universal;
 
 public class PlayerInteract : MonoBehaviour
@@ -15,12 +17,15 @@ public class PlayerInteract : MonoBehaviour
 	//[Header("Interacted Object")]
 	//[SerializeField] GameObject torch;
 
+	string[] interactingObjs = { "HidingObject", "Battery","Collectables" };
+
+	string[] highlightObjs = { "Battery", "Collectables" };
+
 	GameObject previousObj = null;
 
 	private void Update()
 	{
 		RayCastCheck();
-
 	}
 
 	private void RayCastCheck()
@@ -33,27 +38,28 @@ public class PlayerInteract : MonoBehaviour
 		if (Physics.Raycast(torchRay, out RaycastHit objHit, _raycastLength))
 		{
 			GameObject hitGameobject = objHit.collider.gameObject;
-			if(hitGameobject.tag == "HidingObject" || hitGameobject.tag == "Battery" || hitGameobject.tag == "Collectables")
+			if(Array.Exists(interactingObjs,objTag => objTag == hitGameobject.tag))
 			{
 				//Debug.Log($"Object Collided with: {hitGameobject.tag}");
-				if (hitGameobject.tag == "Battery")
+				if (Array.Exists(highlightObjs, objTag => objTag == hitGameobject.tag))
 				{
 					hitGameobject.GetComponent<Renderer>().material.color = Color.yellow;
 				}
 				if (Input.GetKeyDown(interactingKey))
 					hitGameobject.GetComponent<InteractableObject>().InitiateInteractingSequence();
-
 			}
 
+
+
 			// Changing back battery color if its not look at by player
-			if (previousObj != null && previousObj.tag == "Battery" && previousObj != hitGameobject.gameObject)
+			if (previousObj != null && Array.Exists(highlightObjs, objTag => objTag == previousObj.tag) && previousObj != hitGameobject.gameObject)
 			{
 				previousObj.GetComponent<Renderer>().material.color = Color.white;
 			}
 			
 			previousObj = hitGameobject.gameObject;
 		}
-		else if (previousObj != null && previousObj.tag == "Battery")
+		else if (previousObj != null && Array.Exists(highlightObjs, objTag => objTag == previousObj.tag))
 			previousObj.GetComponent<Renderer>().material.color = Color.white;
 	}
 

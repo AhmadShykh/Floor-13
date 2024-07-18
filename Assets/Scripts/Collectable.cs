@@ -5,30 +5,36 @@ using UnityEngine;
 
 public class Collectable : MonoBehaviour,InteractableObject
 {
-    enum CollectableTypes
-    {
-        Paper,
-        Trophy
-    }
+    
+
+	public string collectableName = "";
+	public CollectableTypes type;
+    public string collectableText;
 
 
-    [SerializeField] CollectableTypes type;
-    [SerializeField] string collectableText;
+    //private GameObject _textShownCanvas;
+    //private GameObject _player;
 
-
-    private GameObject _textShownCanvas;
-    private GameObject _player;
+	private void Awake()
+	{
+        //_textShownCanvas = GameObject.FindGameObjectWithTag("TextCanvas");
+        //_player = GameObject.FindGameObjectWithTag("Player");
+	}
 	private void Start()
 	{
-        _textShownCanvas = GameObject.FindGameObjectWithTag("TextCanvas");
-        _player = GameObject.FindGameObjectWithTag("Player");
+
 	}
 
 	public void InitiateInteractingSequence()
 	{
-        _textShownCanvas.SetActive(true); 
-        _textShownCanvas.transform.Find("TextArea").GetComponent<TextMeshProUGUI>().text = collectableText;
-        _player.SetActive(false);
+		CollectablesManager.Instance.AddCollectable(this);
+		CanvasManager.Instance.UpdateGameCanvas(CanvasTypes.CollectableDescription);
 	}
 
+}
+
+public enum CollectableTypes
+{
+	Paper = 0,
+	Trophy = 1,
 }

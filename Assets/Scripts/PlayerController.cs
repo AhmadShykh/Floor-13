@@ -63,8 +63,6 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
 		PlayerMovement();		
-		
-	
 	}
 
 
@@ -99,7 +97,7 @@ public class PlayerController : MonoBehaviour
 			strafeAngle = Mathf.Rad2Deg * Mathf.Atan2(-strafeMov.x, -strafeMov.z);
 		}
 
-		Debug.Log(forceValue);
+		//Debug.Log(forceValue);
 		
 		characterAnimator.SetFloat("Blend", forceValue);
 
@@ -114,7 +112,7 @@ public class PlayerController : MonoBehaviour
 
 		hBYAngleDiff = WrapAngle(hBYAngleDiff);
 
-		float multiplier = 1;
+		//float multiplier = 1;
 
 		if (xAxis != 0 || yAxis != 0)
 		{
@@ -140,7 +138,7 @@ public class PlayerController : MonoBehaviour
 
 		_timer += Time.deltaTime;
 
-		float currentInterpoleVal = multiplier * Mathf.Clamp01(_timer / _rotationSec);
+		//float currentInterpoleVal = multiplier * Mathf.Clamp01(_timer / _rotationSec);
 
 		body.transform.rotation = Quaternion.Slerp(body.transform.rotation, _tarStrafeRot, Time.deltaTime * rotSpeed);
 

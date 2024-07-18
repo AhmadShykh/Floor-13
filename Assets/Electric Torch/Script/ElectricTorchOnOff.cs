@@ -15,8 +15,8 @@ using UnityEngine.UIElements;
 public class ElectricTorchOnOff : MonoBehaviour
 {
 	EmissionMaterialGlassTorchFadeOut _emissionMaterialFade;
-	BatteryPowerPickup _batteryPower;
-	HealthSystemComponent _batteryHealthComponent;
+	//BatteryPowerPickup _batteryPower;
+	//HealthSystemComponent _batteryHealthComponent;
 	//
 
 	public enum LightChoose
@@ -46,8 +46,8 @@ public class ElectricTorchOnOff : MonoBehaviour
 
 	private void Awake()
     {
-		_batteryPower = FindObjectOfType<BatteryPowerPickup>();
-		_batteryHealthComponent = GetComponent<HealthSystemComponent>();
+		//_batteryPower = FindObjectOfType<BatteryPowerPickup>();
+		//_batteryHealthComponent = GetComponent<HealthSystemComponent>();
 	}
     void Start()
 	{
@@ -115,8 +115,12 @@ public class ElectricTorchOnOff : MonoBehaviour
 
 	public void SetBatteryPicked(BatteryPowerPickup battery)
 	{
-		_batteryPower = battery;
-		_PowerPickUp = true;
+		if (intensityLight <= 0)
+		{
+			intensityLight = battery.PowerIntensityLight;
+			Debug.Log(intensityLight);
+			Destroy(battery.gameObject);
+		}
 	}
 
 	void InputKey()
@@ -124,12 +128,13 @@ public class ElectricTorchOnOff : MonoBehaviour
 		if (Input.GetKeyDown(_kCode) && _flashLightOn == true)
 		{
 			_flashLightOn = false;
+			PlayerManager.Instance.TorchPowerInput(_flashLightOn);
 
 		}
 		else if (Input.GetKeyDown(_kCode) && _flashLightOn == false)
 		{
 			_flashLightOn = true;
-
+			PlayerManager.Instance.TorchPowerInput(_flashLightOn);
 		}
 	}
 
@@ -178,13 +183,7 @@ public class ElectricTorchOnOff : MonoBehaviour
 			//}
 		}
 
-		if(_batteryPower && _PowerPickUp )
-		{
-			intensityLight = _batteryPower.PowerIntensityLight;
-			BatterPickedUp?.Invoke(intensityLight);
-			Destroy(_batteryPower.gameObject);
-			_PowerPickUp = false;
-		}
+		
 
 
 		InputKey();

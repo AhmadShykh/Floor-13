@@ -7,13 +7,13 @@ using UnityEngine;
 
 public class BatteryPowerPickup : MonoBehaviour, InteractableObject
 {
-    ElectricTorchOnOff _torchOnOff;
+    //ElectricTorchOnOff _torchOnOff;
     //
     public float PowerIntensityLight;
 
     private void Awake()
     {
-        _torchOnOff = FindObjectOfType<ElectricTorchOnOff>();
+        //_torchOnOff = FindObjectOfType<ElectricTorchOnOff>();
     }
 
 	public void HighlightObj()
@@ -23,9 +23,8 @@ public class BatteryPowerPickup : MonoBehaviour, InteractableObject
 
 	public void InitiateInteractingSequence()
 	{
-
-		if (_torchOnOff.intensityLight <= 0)
-			_torchOnOff.SetBatteryPicked(this);
+		
+		PlayerManager.Instance.BatterPowerPickedup(this);
 	}
 
 }

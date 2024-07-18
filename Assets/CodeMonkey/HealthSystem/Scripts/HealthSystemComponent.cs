@@ -23,12 +23,14 @@ namespace CodeMonkey.HealthSystemCM {
             if (startingHealthAmount != 0) {
                 healthSystem.SetHealth(startingHealthAmount);
             }
-        }
 
-        /// <summary>
-        /// Get the Health System created by this Component
-        /// </summary>
-        public HealthSystem GetHealthSystem() {
+
+		}
+
+		/// <summary>
+		/// Get the Health System created by this Component
+		/// </summary>
+		public HealthSystem GetHealthSystem() {
             return healthSystem;
         }
 

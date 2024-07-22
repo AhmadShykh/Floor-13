@@ -1,19 +1,5 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Xml.Serialization;
-using TMPro;
-using Unity.VisualScripting;
-using UnityEditor;
-using UnityEditor.Compilation;
-using UnityEditor.EditorTools;
-using UnityEditor.Rendering;
-using UnityEditorInternal;
 using UnityEngine;
-using UnityEngine.Animations;
-using UnityEngine.EventSystems;
-using UnityEngine.Rendering;
-using UnityEngine.UIElements;
 
 public class PlayerController : MonoBehaviour
 {
@@ -23,11 +9,13 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float yDegree;
     [SerializeField] GameObject head;
     [SerializeField] GameObject body;
+	[SerializeField] GameObject camera;
 
 
 	[Header("Movement Settings")]
 	[SerializeField] float accelDeaccel;
 	[SerializeField] float speed;
+	[SerializeField] GameObject[] bodyMesh;
 
 	[Header("Body Rotation Settings")]
 	[SerializeField] float degreePerSec;
@@ -53,16 +41,66 @@ public class PlayerController : MonoBehaviour
     Quaternion _tarStrafeRot = Quaternion.identity;
 
 
-    // Start is called before the first frame update
-    void Start()
+	private void Awake()
+	{
+		// Initializing Player Manager
+		PlayerManager instance = PlayerManager.Instance;
+
+		PlayerManager.Instance.playerStateChangeEvent += PlayerChangeState;
+	}
+
+	// Start is called before the first frame update
+	void Start()
     {
 		UnityEngine.Cursor.lockState = CursorLockMode.Locked;
+
+		//camera = GameObject.FindGameObjectWithTag("MainCamera");
     }
 
-    // Update is called once per frame
-    void Update()
+	void PlayerChangeState(PlayerState state)
+	{
+
+		if (state == PlayerState.Default)
+		{
+			HidePlayer(true);
+			camera.SetActive(true);
+			gameObject.SetActive(true);
+			PlayerManager.Instance.isMoving = true;
+			Cursor.lockState = CursorLockMode.Locked;
+		}
+		else if (state == PlayerState.Hidden)
+		{
+			HidePlayer(false);
+			camera.gameObject.SetActive(false);
+			PlayerManager.Instance.isMoving = false;
+			Cursor.lockState = CursorLockMode.Locked;
+		}
+		else if(state == PlayerState.Interacting )
+		{
+			camera.gameObject.SetActive(false);
+			PlayerManager.Instance.isMoving = false;
+			Cursor.lockState = CursorLockMode.None;
+		}
+		//else if(state == PlayerState.Reading)
+		//{
+		//	isMoving = false;
+		//}
+		//Debug.Log(PlayerManager.Instance.isMoving);
+
+	}
+
+	private void HidePlayer(bool val)
+	{
+		foreach (GameObject obj in bodyMesh)
+			obj.SetActive(val);
+	}
+
+
+	// Update is called once per frame
+	void Update()
     {
-		PlayerMovement();		
+		if(PlayerManager.Instance.isMoving)
+			PlayerMovement();		
 	}
 
 
@@ -100,7 +138,6 @@ public class PlayerController : MonoBehaviour
 		//Debug.Log(forceValue);
 		
 		characterAnimator.SetFloat("Blend", forceValue);
-
 
 		// Rotating body in backwards direction if the body and head direction does not match
 

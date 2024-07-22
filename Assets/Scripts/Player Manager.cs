@@ -1,4 +1,5 @@
 using CodeMonkey.HealthSystemCM;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,27 +11,48 @@ public class PlayerManager
 	private static PlayerManager instance;
     private PlayerHealthSystemComponent playerHealth;
     private BatteryHealthSystemComponent batteryHealth;
-    public static PlayerManager Instance 
+
+    public Action<PlayerState> playerStateChangeEvent;
+    public PlayerState playerCurrentState;
+
+    //public bool isHidden;
+    public PlayerDirection playerXDirection;
+    public PlayerDirection playerYDirection;
+    
+    public Quaternion prevRot;
+
+    public bool isMoving = true;
+
+	public static PlayerManager Instance 
     { 
         get 
         {
 			if (instance == null)
 			{
 				instance = new PlayerManager();
+                instance.UpdatePlayerState(PlayerState.Default);
 			}
 			return instance; 
         } 
     }
-    public PlayerDirection playerXDirection;
-    public PlayerDirection playerYDirection;
-    
-    public Quaternion prevRot;
     private PlayerManager() 
     {
         playerXDirection = PlayerDirection.Zero;
         playerYDirection = PlayerDirection.Zero;
 
+        //camera = GameObject.FindGameObjectWithTag("MainCamera");
+
+
         prevRot = Quaternion.identity;
+    }
+
+
+    public void UpdatePlayerState(PlayerState playerState)
+    {
+        playerCurrentState = playerState;
+
+        playerStateChangeEvent?.Invoke(playerState);
+
     }
 
     public void InitializeHealth(PlayerHealthSystemComponent health)
@@ -68,6 +90,14 @@ public class PlayerManager
 
 
     
+}
+
+public enum PlayerState
+{
+    Default,
+    //Reading,
+    Hidden,
+    Interacting,
 }
 
 public enum PlayerDirection

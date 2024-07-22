@@ -86,6 +86,7 @@ MonoBehaviour:
   yDegree: 75
   head: {fileID: 3916019173129236117}
   body: {fileID: 57142080459664012}
+  camera: {fileID: 4070528737819897015}
   accelDeaccel: 5.5
   speed: 1.5
   degreePerSec: 90

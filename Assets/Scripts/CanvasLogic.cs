@@ -24,7 +24,7 @@ public class CanvasLogic : MonoBehaviour
 	[SerializeField] Sprite[] collectableSprites;
 
 
-    private GameObject _player;
+	//private GameObject _player;
 	bool canvasShowing = false;
 
 
@@ -33,34 +33,79 @@ public class CanvasLogic : MonoBehaviour
 		// Initializing Collectables Manager && Canvas Manager 
 		CollectablesManager manager = CollectablesManager.Instance;
 		CanvasManager canvasManager = CanvasManager.Instance;
-		
-		CanvasManager.Instance.OnCanvasChanged += CanvasChanged;
 
-		_player = GameObject.FindGameObjectWithTag("Player");
-		
+		CanvasManager.Instance.OnCanvasChanged += CanvasChanged;
+		CollectablesManager.Instance.AddCollectablesAction += AddCollectable;
+
+		//_player = GameObject.FindGameObjectWithTag("Player");
+
 	}
+
 
 	private void CanvasChanged(CanvasTypes type)
 	{
 
+		// If the user was reading then set the player state to default 
+		// but if the playing was checking out collectables than don't because 
+		// collectables are displayed in overlay thus could cause multiple player states at once
+
+		if (CanvasManager.Instance.prevCanvas != CanvasTypes.None)
+			ToggleCanvas(false, (int)CanvasManager.Instance.prevCanvas - 1);
+		else if (CanvasManager.Instance.prevCanvas == CanvasTypes.CollectableDescription)
+			PlayerManager.Instance.UpdatePlayerState(PlayerState.Default);
 
 		if(type == CanvasTypes.None)
 		{
-			foreach(GameObject canvas in  CanvasObjects)
-			{
-				canvas.SetActive(false);
-			}
+			Time.timeScale = 1;
+			PlayerManager.Instance.UpdatePlayerState(PlayerManager.Instance.playerCurrentState);
 		}
+		else
+		{
+			Time.timeScale = 0;
+			Cursor.lockState = CursorLockMode.None;
+			if (type == CanvasTypes.CollectablesCanvas)
+			{
+				ToggleCanvas(true, 1);
+			}
+			else if (type == CanvasTypes.CollectableDescription)
+			{
+				ToggleCanvas(true, 0);
+				//PlayerManager.Instance.UpdatePlayerState(PlayerState.Reading);
+			}
+
+		}
+		
+
+	}
+
+
+	private void ToggleCanvas(bool active, int i)
+	{
+		CanvasObjects[i].SetActive(active);
 	}
 
 	private void Start()
 	{
+		// Setting Canvas and Objects Default Value
+
+		collectableDescription.SetActive(false);
+
+		foreach (GameObject canvas in CanvasObjects)
+		{
+			canvas.SetActive(false);
+		}
+
 		InitializeCollectableCanvas();
 	}
 
 	private void Update()
 	{
 		HandleInputs();
+	}
+
+	public void UpdateCanvas(int type)
+	{
+		CanvasManager.Instance.UpdateGameCanvas((CanvasTypes)type);
 	}
 
 	private void HandleInputs()
@@ -76,32 +121,30 @@ public class CanvasLogic : MonoBehaviour
 
 	void AddCollectable(Collectable collectable)
 	{
+		AddBtnToCollectablesArea(collectable);
+
+		CanvasObjects[1].transform.Find("TextPanel/TextArea").GetComponent<TextMeshProUGUI>().text = collectable.collectableText;
+
+		//ToggleTextCanvas(true);
+
+	}
+
+	private void AddBtnToCollectablesArea(Collectable collectable)
+	{
 		GameObject button = Instantiate(collectableBtn, collectableBtnsPanel.transform);
 		button.GetComponentInChildren<TextMeshProUGUI>().text = collectable.collectableName;
 		button.GetComponentInChildren<Image>().sprite = collectableSprites[(int)collectable.type];
 
 		// Assign a listener to handle the click event
 		button.GetComponent<Button>().onClick.AddListener(() => ShowDescription(collectable));
-
-
-		textCanvas.transform.Find("TextPanel/TextArea").GetComponent<TextMeshProUGUI>().text = collectable.collectableText;
-
-		ToggleTextCanvas(true);
-
 	}
-
 
 	void InitializeCollectableCanvas()
 	{
 		// Generate buttons for each collectable
 		foreach (Collectable collectable in CollectablesManager.Instance.collectables)
 		{
-			GameObject button = Instantiate(collectableBtn, collectableBtnsPanel.transform);
-			button.GetComponentInChildren<TextMeshProUGUI>().text = collectable.collectableName;
-			button.GetComponent<Image>().sprite = collectableSprites[(int)collectable.type];
-
-			// Assign a listener to handle the click event
-			button.GetComponent<Button>().onClick.AddListener(() => ShowDescription(collectable));
+			AddBtnToCollectablesArea(collectable);
 		}
 	}
 
@@ -111,35 +154,37 @@ public class CanvasLogic : MonoBehaviour
 		collectableDescription.GetComponentInChildren<TextMeshProUGUI>().text = collectable.collectableText;
 	}
 
-	public void ToggleCollectableCanvas(bool active)
-	{
-		if (active)
-		{
-			collectableDescription.SetActive(!active);
-		}
-		canvasShowing = active;
+	//public void ToggleCollectableCanvas(bool active)
+	//{
+	//	if (active)
+	//	{
+	//		collectableDescription.SetActive(!active);
+	//	}
+	//	canvasShowing = active;
 
-		collectablesCanvas.SetActive(active);
-		DefaultObjsValue(active);
-	}
+	//	collectablesCanvas.SetActive(active);
+	//	DefaultObjsValue(active);
+	//}
 
-	public void ToggleTextCanvas(bool active)
-	{
-		canvasShowing = active;
-		textCanvas.SetActive(active);
-		DefaultObjsValue(active);
-	}
+	//public void ToggleTextCanvas(bool active)
+	//{
+	//	canvasShowing = active;
+	//	textCanvas.SetActive(active);
+	//	DefaultObjsValue(active);
+	//}
 
 
-	private void DefaultObjsValue(bool active)
-	{
+	//private void DefaultObjsValue(bool active)
+	//{
 		
-			_player.SetActive(!active);
-			if(active)
-				Cursor.lockState = CursorLockMode.None;
-			else
-				Cursor.lockState = CursorLockMode.Locked;
+	//	_player.GetComponent<PlayerController>().enabled = active;
 
-	}
+	//	if(!active)
+	//		Cursor.lockState = CursorLockMode.None;
+	//	else
+	//		Cursor.lockState = CursorLockMode.Locked;
+
+	//}
 
 }
+

@@ -12,16 +12,18 @@ public class PlayerInteract : MonoBehaviour
 {
     public static KeyCode interactingKey = KeyCode.F;
 	[SerializeField] float _raycastLength;
+	[SerializeField] GameObject _mainCamera;
 
 	// Those Objects which might be effected by a certain raycast hit
 	//[Header("Interacted Object")]
 	//[SerializeField] GameObject torch;
 
-	string[] interactingObjs = { "HidingObject", "Battery","Collectables" };
+	string[] interactingObjs = { "HidingObject", "Battery","Collectables" ,"Safe"};
 
 	string[] highlightObjs = { "Battery", "Collectables" };
 
 	GameObject previousObj = null;
+	InteractableObject _interactedWith;
 
 	private void Update()
 	{
@@ -30,7 +32,15 @@ public class PlayerInteract : MonoBehaviour
 
 	private void RayCastCheck()
 	{
-		Ray torchRay = new Ray(transform.position, transform.forward);
+		Ray torchRay = new Ray(_mainCamera.transform.position, _mainCamera.transform.forward);
+
+		bool interacted = Input.GetKeyDown(interactingKey);
+
+		if(interacted && _interactedWith != null)
+		{
+			_interactedWith.NotInteracting();
+			_interactedWith = null;
+		}
 
 		// Draw the ray in the Scene view for debugging purposes
 		Debug.DrawRay(torchRay.origin, torchRay.direction * _raycastLength, Color.red);
@@ -45,8 +55,12 @@ public class PlayerInteract : MonoBehaviour
 				{
 					hitGameobject.GetComponent<Renderer>().material.color = Color.yellow;
 				}
-				if (Input.GetKeyDown(interactingKey))
-					hitGameobject.GetComponent<InteractableObject>().InitiateInteractingSequence();
+				if (interacted)
+				{
+					_interactedWith = hitGameobject.GetComponent<InteractableObject>();
+					_interactedWith.Interacting();
+
+				}
 			}
 
 

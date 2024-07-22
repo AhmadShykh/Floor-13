@@ -4,5 +4,6 @@ using UnityEngine;
 
 public interface InteractableObject 
 {
-    public void InitiateInteractingSequence();
+    public void Interacting();
+    public void NotInteracting();
 }

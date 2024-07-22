@@ -25,10 +25,18 @@ public class Collectable : MonoBehaviour,InteractableObject
 
 	}
 
-	public void InitiateInteractingSequence()
+	public void Interacting()
 	{
 		CollectablesManager.Instance.AddCollectable(this);
 		CanvasManager.Instance.UpdateGameCanvas(CanvasTypes.CollectableDescription);
+		//PlayerManager.Instance.UpdatePlayerState(PlayerState.Reading);
+	}
+
+	public void NotInteracting()
+	{
+		Debug.Log("Collectables dont uninteract");
+		// Colletables Will do nothing if not interacting
+		return;
 	}
 
 }

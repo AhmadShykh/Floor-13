@@ -8,6 +8,7 @@ TagManager:
   - HidingObject
   - Collectables
   - TextCanvas
+  - Safe
   layers:
   - Default
   - TransparentFX

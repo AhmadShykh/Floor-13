@@ -24,7 +24,19 @@ public class BatteryPowerPickup : MonoBehaviour, InteractableObject
 	public void InitiateInteractingSequence()
 	{
 		
+		
+	}
+
+	public void Interacting()
+	{
 		PlayerManager.Instance.BatterPowerPickedup(this);
 	}
 
+	public void NotInteracting()
+	{
+		// Battery Wont Do Anything if interacted
+		Debug.Log("Batteries dont uninteract");
+
+		return;
+	}
 }

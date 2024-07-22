@@ -7,33 +7,47 @@ public class HideInObject : MonoBehaviour, InteractableObject
 {
     [SerializeField] GameObject objCamera;
 
-    GameObject _player;
+    //GameObject _player;
     private bool _objCamBool;
 
 
 	void Start()
     {
         _objCamBool = false; 
-        _player = GameObject.FindGameObjectWithTag("Player");
+        //_player = GameObject.FindGameObjectWithTag("Player");
     }
 
-	private void Update()
-	{
-		if(Input.GetKeyDown(PlayerInteract.interactingKey) && _objCamBool)
-        {
-            InitiateInteractingSequence();
-		}
-	}
+	//private void Update()
+	//{
+	//	if(Input.GetKeyDown(PlayerInteract.interactingKey) && _objCamBool)
+ //       {
+ //           InitiateInteractingSequence();
+	//	}
+	//}
 
-	void ToggleCamera(bool objectCameraBool)
+	void SetCamera(bool objectCameraBool)
     {
         
         objCamera.SetActive(objectCameraBool);
-        _player.SetActive(!objectCameraBool);
+        if (objectCameraBool)
+            PlayerManager.Instance.UpdatePlayerState(PlayerState.Hidden);
+        else
+            PlayerManager.Instance.UpdatePlayerState(PlayerState.Default);
     }
-	public void InitiateInteractingSequence()
+	public void ToggleCamera()
 	{
-        _objCamBool = !_objCamBool;
-        ToggleCamera(_objCamBool);
+		_objCamBool = !_objCamBool;
+		SetCamera(_objCamBool);
+	}
+
+	public void Interacting()
+	{
+		ToggleCamera();
+	}
+
+	public void NotInteracting()
+	{
+		Debug.Log("InteractingCalled");
+		ToggleCamera();
 	}
 }

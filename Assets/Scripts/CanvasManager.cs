@@ -22,12 +22,20 @@ public class CanvasManager
 	}
 
 	public CanvasTypes currentCanvas;
+	public CanvasTypes prevCanvas;
 	public Action<CanvasTypes> OnCanvasChanged;
 
 	public void UpdateGameCanvas(CanvasTypes newCanvas)
 	{
 
+		prevCanvas = currentCanvas;
 		currentCanvas = newCanvas;
+
+		//if(newCanvas!= CanvasTypes.None)
+		//	PlayerManager.Instance.UpdatePlayerState(PlayerState.Reading);
+		//else
+		//	PlayerManager.Instance.UpdatePlayerState(PlayerState.Default);
+
 
 		OnCanvasChanged?.Invoke(currentCanvas);
 

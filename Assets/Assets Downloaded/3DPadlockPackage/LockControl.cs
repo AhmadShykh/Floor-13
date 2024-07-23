@@ -45,8 +45,9 @@ public class LockControl : MonoBehaviour
             transform.localPosition = new Vector3(transform.localPosition.x, transform.localPosition.y + moveUp, transform.localPosition.z);
             isOpened = true;
             locker.lockerOpen = true;
+			PlayerManager.Instance.UpdatePlayerState(PlayerState.Default);
 
-        }
+		}
     }
 
     private void OnDestroy()

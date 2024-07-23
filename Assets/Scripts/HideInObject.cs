@@ -47,7 +47,7 @@ public class HideInObject : MonoBehaviour, InteractableObject
 
 	public void NotInteracting()
 	{
-		Debug.Log("InteractingCalled");
+		//Debug.Log("InteractingCalled");
 		ToggleCamera();
 	}
 }

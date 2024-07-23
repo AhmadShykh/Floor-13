@@ -1,9 +1,15 @@
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    [Header("Camera Rotation Settings")]
+
+	[Header("General Settings")]
+	[SerializeField] GameObject player;
+
+
+	[Header("Camera Rotation Settings")]
     [SerializeField] float mouseSensitivity;
     [SerializeField] float xDegree;
     [SerializeField] float yDegree;
@@ -59,26 +65,28 @@ public class PlayerController : MonoBehaviour
 
 	void PlayerChangeState(PlayerState state)
 	{
+		//Debug.Log("State Change: " +state);
 
+		ResetAnimation();
+		
 		if (state == PlayerState.Default)
 		{
-			HidePlayer(true);
-			camera.SetActive(true);
-			gameObject.SetActive(true);
-			PlayerManager.Instance.isMoving = true;
-			Cursor.lockState = CursorLockMode.Locked;
+			SetPlayerDefault(true);
+			camera.gameObject.SetActive(true);
+
+
+			//PlayerManager.Instance.currentPlayerObject.SetActive(true);
+
 		}
 		else if (state == PlayerState.Hidden)
 		{
-			HidePlayer(false);
-			camera.gameObject.SetActive(false);
-			PlayerManager.Instance.isMoving = false;
-			Cursor.lockState = CursorLockMode.Locked;
+			SetPlayerDefault(false);
 		}
 		else if(state == PlayerState.Interacting )
 		{
 			camera.gameObject.SetActive(false);
 			PlayerManager.Instance.isMoving = false;
+			PlayerManager.Instance.isRaycasting = false;
 			Cursor.lockState = CursorLockMode.None;
 		}
 		//else if(state == PlayerState.Reading)
@@ -89,10 +97,39 @@ public class PlayerController : MonoBehaviour
 
 	}
 
+	private void ResetAnimation()
+	{
+		_xVal = 0;
+		_yVal = 0;
+		characterAnimator.SetFloat("Blend", 0);
+
+	}
+
+
+	// Switching between player complete default to opposite 
+	void SetPlayerDefault(bool val)
+	{
+		PlayerManager.Instance.isMoving = val;
+		PlayerManager.Instance.isRaycasting = val;
+		PlayerManager.Instance.currentPlayerObject.SetActive(val);
+		Cursor.lockState = CursorLockMode.Locked;
+	}
+
+	//public void SetPlayerInactive(bool val)
+	//{
+	//	gameObject.SetActive(val);
+	//}
+
+	public void UpdatePlayerState(PlayerState state)
+	{
+		PlayerManager.Instance.UpdatePlayerState(state);
+	}
+
+
 	private void HidePlayer(bool val)
 	{
 		foreach (GameObject obj in bodyMesh)
-			obj.SetActive(val);
+			obj.SetActive(!val);
 	}
 
 
@@ -100,7 +137,9 @@ public class PlayerController : MonoBehaviour
 	void Update()
     {
 		if(PlayerManager.Instance.isMoving)
-			PlayerMovement();		
+			PlayerMovement();	
+		
+
 	}
 
 
@@ -192,8 +231,10 @@ public class PlayerController : MonoBehaviour
 		// Rotating Movement direction wrt Head
 		movement = Quaternion.Euler(0, head.transform.eulerAngles.y, 0) * movement;
 
-		//Rotating Object in movement direction
-		transform.Translate(movement * speed * Time.deltaTime);
+		//Moving Object 
+		PlayerManager.Instance.currentPlayerObject.transform.Translate(movement * speed * Time.deltaTime);
+
+
 		return movement;
 	}
 

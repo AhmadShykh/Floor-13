@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using System.Collections;
 using UnityEngine.SceneManagement;
+using System;
 
 public class GF_GameController : MonoBehaviour {
 
@@ -9,8 +10,9 @@ public class GF_GameController : MonoBehaviour {
 	public Scenes PreviousScene;
 	public Scenes NextScene;
 
-	[Header ("Main Player", order = 1)]
+	[Header("Main Player", order = 1)]
 	public Player_Attributes[] Players;
+	//public PlayerController Player;
 
 	[Header ("Game Dialogues")]
 	public Game_Dialogues Game_Elements;
@@ -33,10 +35,14 @@ public class GF_GameController : MonoBehaviour {
 	[Header ("Ad Sequence ID")]
 	public int SequenceID;
 
+	//Events	
+	
 	//Local Variables
 	GameObject PlayerMain;
 	GameObject AudioSource_Parent;
 	GameObject FX_AudioSource;
+	
+	
 	//Timer
 	int minutes;
 	int seconds;
@@ -46,6 +52,7 @@ public class GF_GameController : MonoBehaviour {
 	private int FinishCount = 0;
 	private bool isTimerEnabled;
 	private int Rewardamount = 0;
+	
 	[HideInInspector]
 	public bool TimerPaused = false;
 
@@ -149,10 +156,9 @@ public class GF_GameController : MonoBehaviour {
 		if (Players.Length > 0) {
 			for (int i = 0; i < Players.Length; i++) {
 				Players [i].PlayerObject.SetActive (false);
-				Players [i].PlayerControls.alpha = 0;
-				Players [i].PlayerControls.interactable = false;
-				Players [i].PlayerControls.blocksRaycasts = false;
-            }
+				//Players[i].PlayerController.UpdatePlayerState(PlayerState.Default);
+
+			}
         } else if (Players.Length == 0) {
 			Debug.LogError ("No Players have been assigned in the inspector !");
         }
@@ -230,16 +236,27 @@ public class GF_GameController : MonoBehaviour {
 		Player.transform.rotation = Position.rotation;
 	}
 
-	public void SwitchPlayer (int PlayerIndex, bool isActive){
-		if (PlayerIndex > Players.Length - 1){
-			Debug.LogError ("Player at index-> " + PlayerIndex + " does not exist !");
-		} else{
-			if (PlayerMain != null){
-				DeactivatePlayer (currentPlayer, isActive);
+	public void SwitchPlayer(int PlayerIndex, bool isActive)
+	{
+		if (PlayerIndex > Players.Length - 1)
+		{
+			Debug.LogError("Player at index-> " + PlayerIndex + " does not exist !");
+		}
+		else
+		{
+			if (PlayerMain != null)
+			{
+				DeactivatePlayer(currentPlayer, isActive);
 			}
 			currentPlayer = PlayerIndex;
-			SwitchControls ();
-			ActivatePlayer (currentPlayer);
+			
+			// Setting Player Default Settings when player switches
+			PlayerManager.Instance.currentPlayerObject = Players[currentPlayer ].PlayerObject;
+			PlayerManager.Instance.UpdatePlayerState(PlayerState.Default);
+
+			Debug.Log("Player Set");
+			//SwitchControls();
+			ActivatePlayer(currentPlayer);
 		}
 
 	}
@@ -272,20 +289,20 @@ public class GF_GameController : MonoBehaviour {
 		}
 	}
 
-	void SwitchControls (){
-		for (int i = 0; i < Players.Length; i++){
-			if (i == currentPlayer){
-				Players [i].PlayerObject.SetActive (true);
-				Players [i].PlayerControls.alpha = 1;
-				Players [i].PlayerControls.interactable = true;
-				Players [i].PlayerControls.blocksRaycasts = true;
-			} else{
-				Players [i].PlayerControls.alpha = 0;
-				Players [i].PlayerControls.interactable = false;
-				Players [i].PlayerControls.blocksRaycasts = false;
-			}
-		}
-	}
+	//void SwitchControls (){
+	//	for (int i = 0; i < Players.Length; i++){
+	//		if (i == currentPlayer){
+	//			Players [i].PlayerObject.SetActive (true);
+	//			Players [i].PlayerControls.alpha = 1;
+	//			Players [i].PlayerControls.interactable = true;
+	//			Players [i].PlayerControls.blocksRaycasts = true;
+	//		} else{
+	//			Players [i].PlayerControls.alpha = 0;
+	//			Players [i].PlayerControls.interactable = false;
+	//			Players [i].PlayerControls.blocksRaycasts = false;
+	//		}
+	//	}
+	//}
 
 	#endregion
 
@@ -464,7 +481,7 @@ public class GF_GameController : MonoBehaviour {
     }
 
 	public void PauseGame () {
-		ShowAds (SequenceID);
+		//ShowAds (SequenceID);
 		Time.timeScale = 0.0f;
 		AudioListener.pause = true;
     }

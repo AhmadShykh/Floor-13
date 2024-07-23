@@ -56,12 +56,12 @@ public class CanvasLogic : MonoBehaviour
 
 		if(type == CanvasTypes.None)
 		{
-			Time.timeScale = 1;
+			GameManager.Instance.ResumeGame(); 
 			PlayerManager.Instance.UpdatePlayerState(PlayerManager.Instance.playerCurrentState);
 		}
 		else
 		{
-			Time.timeScale = 0;
+			GameManager.Instance.PauseGame();
 			Cursor.lockState = CursorLockMode.None;
 			if (type == CanvasTypes.CollectablesCanvas)
 			{

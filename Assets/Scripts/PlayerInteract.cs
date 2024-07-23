@@ -23,7 +23,7 @@ public class PlayerInteract : MonoBehaviour
 	string[] highlightObjs = { "Battery", "Collectables" };
 
 	GameObject previousObj = null;
-	InteractableObject _interactedWith;
+	GameObject _interactedWith;
 
 	private void Update()
 	{
@@ -36,45 +36,48 @@ public class PlayerInteract : MonoBehaviour
 
 		bool interacted = Input.GetKeyDown(interactingKey);
 
-		if(interacted && _interactedWith != null)
+		if (interacted && _interactedWith != null)
 		{
-			_interactedWith.NotInteracting();
+			_interactedWith.GetComponent<InteractableObject>().NotInteracting();
 			_interactedWith = null;
 		}
+		else if (PlayerManager.Instance.isRaycasting)
+		{ 
+			// Draw the ray in the Scene view for debugging purposes
+			Debug.DrawRay(torchRay.origin, torchRay.direction * _raycastLength, Color.red);
 
-		// Draw the ray in the Scene view for debugging purposes
-		Debug.DrawRay(torchRay.origin, torchRay.direction * _raycastLength, Color.red);
-
-		if (Physics.Raycast(torchRay, out RaycastHit objHit, _raycastLength))
-		{
-			GameObject hitGameobject = objHit.collider.gameObject;
-			if(Array.Exists(interactingObjs,objTag => objTag == hitGameobject.tag))
+			if (Physics.Raycast(torchRay, out RaycastHit objHit, _raycastLength))
 			{
-				//Debug.Log($"Object Collided with: {hitGameobject.tag}");
-				if (Array.Exists(highlightObjs, objTag => objTag == hitGameobject.tag))
+				GameObject hitGameobject = objHit.collider.gameObject;
+				if(Array.Exists(interactingObjs,objTag => objTag == hitGameobject.tag))
 				{
-					hitGameobject.GetComponent<Renderer>().material.color = Color.yellow;
+					//Debug.Log($"Object Collided with: {hitGameobject.tag}");
+					if (interacted && _interactedWith != hitGameobject)
+					{
+						_interactedWith = hitGameobject;
+						_interactedWith.GetComponent<InteractableObject>().Interacting();
+						
+					}
+					if (Array.Exists(highlightObjs, objTag => objTag == hitGameobject.tag))
+					{
+						hitGameobject.GetComponent<Renderer>().material.color = Color.yellow;
+						_interactedWith = null;
+					}
 				}
-				if (interacted)
-				{
-					_interactedWith = hitGameobject.GetComponent<InteractableObject>();
-					_interactedWith.Interacting();
 
+				// Changing back battery color if its not look at by player
+				if (previousObj != null && Array.Exists(highlightObjs, objTag => objTag == previousObj.tag) && previousObj != hitGameobject.gameObject)
+				{
+					previousObj.GetComponent<Renderer>().material.color = Color.white;
 				}
+				previousObj = hitGameobject.gameObject;
 			}
-
-
-
-			// Changing back battery color if its not look at by player
-			if (previousObj != null && Array.Exists(highlightObjs, objTag => objTag == previousObj.tag) && previousObj != hitGameobject.gameObject)
-			{
+			else if (previousObj != null && Array.Exists(highlightObjs, objTag => objTag == previousObj.tag))
 				previousObj.GetComponent<Renderer>().material.color = Color.white;
-			}
-			
-			previousObj = hitGameobject.gameObject;
+
 		}
-		else if (previousObj != null && Array.Exists(highlightObjs, objTag => objTag == previousObj.tag))
-			previousObj.GetComponent<Renderer>().material.color = Color.white;
+
+		
 	}
 
 }

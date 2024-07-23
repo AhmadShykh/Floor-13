@@ -42,8 +42,9 @@ public class GameManager {
 		}
 	}
 
-	public void SwitchPlayer(int index, bool active){
-		GameObject.FindGameObjectWithTag ("GameController").GetComponent<GF_GameController> ().SwitchPlayer (index, active);
+	public void switchplayer(int index, bool active)
+	{
+		GameObject.FindGameObjectWithTag("gamecontroller").GetComponent<GF_GameController>().SwitchPlayer(index, active);
 	}
 
 	public void PauseTimer(){
@@ -57,5 +58,16 @@ public class GameManager {
     public void UpdateInventory() {
         //Give items to player here
     }
+
+	public void PauseGame()
+	{
+		GameObject.FindGameObjectWithTag("GameController").GetComponent<GF_GameController>().PauseGame();
+	}
+
+	public void ResumeGame()
+	{
+		GameObject.FindGameObjectWithTag("GameController").GetComponent<GF_GameController>().ResumeGame();
+	}
+
 
 }

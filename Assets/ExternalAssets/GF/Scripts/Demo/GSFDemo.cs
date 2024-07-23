@@ -19,8 +19,8 @@ public class GFDemo : MonoBehaviour {
 		GameManager.Instance.ResumeTimer ();
 	}
 
-	public void SwitchPlayer(int index){
-		GameManager.Instance.SwitchPlayer (index,true);
-	}
+	//public void SwitchPlayer(int index){
+	//	GameManager.Instance.SwitchPlayer (index,true);
+	//}
 
 }

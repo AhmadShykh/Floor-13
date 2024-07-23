@@ -22,6 +22,9 @@ public class PlayerManager
     public Quaternion prevRot;
 
     public bool isMoving = true;
+    public bool isRaycasting = true;
+
+    public GameObject currentPlayerObject;
 
 	public static PlayerManager Instance 
     { 
@@ -30,7 +33,6 @@ public class PlayerManager
 			if (instance == null)
 			{
 				instance = new PlayerManager();
-                instance.UpdatePlayerState(PlayerState.Default);
 			}
 			return instance; 
         } 
@@ -72,7 +74,7 @@ public class PlayerManager
 
     public void TorchPowerInput(bool value)
     {
-        Debug.Log(value);  
+        //Debug.Log(value);  
         batteryHealth.batterOn = value;
     }
 

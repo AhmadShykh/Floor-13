@@ -48,10 +48,11 @@ public class Locker : MonoBehaviour, InteractableObject
 	}
 	public void ToggleCamera()
 	{
-		if(!lockerOpen || _objCamBool)
+		Debug.Log($"{lockerOpen} {_objCamBool}");
+		if(!lockerOpen )
 		{
 			_objCamBool = !_objCamBool;
-			SetCamera(!_objCamBool);
+			SetCamera(_objCamBool);
 		}
 		else
 		{
@@ -64,13 +65,13 @@ public class Locker : MonoBehaviour, InteractableObject
 
 	public void Interacting()
 	{
-		Debug.Log("Locker");
+		//Debug.Log("Locker");
 		ToggleCamera();
 	}
 
 	public void NotInteracting()
 	{
-		Debug.Log("Locker");
+		//Debug.Log("Locker");
 		ToggleCamera();
 	}
 }

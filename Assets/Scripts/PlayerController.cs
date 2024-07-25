@@ -5,8 +5,8 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
 
-	[Header("General Settings")]
-	[SerializeField] GameObject player;
+	//[Header("General Settings")]
+	//[SerializeField] GameObject player;
 
 
 	[Header("Camera Rotation Settings")]
@@ -15,7 +15,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float yDegree;
     [SerializeField] GameObject head;
     [SerializeField] GameObject body;
-	[SerializeField] GameObject camera;
+	public GameObject camera;
 
 
 	[Header("Movement Settings")]
@@ -52,7 +52,7 @@ public class PlayerController : MonoBehaviour
 		// Initializing Player Manager
 		PlayerManager instance = PlayerManager.Instance;
 
-		PlayerManager.Instance.playerStateChangeEvent += PlayerChangeState;
+		//PlayerManager.Instance.playerStateChangeEvent += PlayerChangeState;
 	}
 
 	// Start is called before the first frame update
@@ -63,39 +63,39 @@ public class PlayerController : MonoBehaviour
 		//camera = GameObject.FindGameObjectWithTag("MainCamera");
     }
 
-	void PlayerChangeState(PlayerState state)
-	{
-		//Debug.Log("State Change: " +state);
+	//void PlayerChangeState(PlayerState state)
+	//{
+	//	//Debug.Log("State Change: " +state);
 
-		ResetAnimation();
+	//	ResetAnimation();
 		
-		if (state == PlayerState.Default)
-		{
-			SetPlayerDefault(true);
-			camera.gameObject.SetActive(true);
+	//	if (state == PlayerState.Default)
+	//	{
+	//		SetPlayerDefault(true);
+	//		camera.gameObject.SetActive(true);
 
 
-			//PlayerManager.Instance.currentPlayerObject.SetActive(true);
+	//		//PlayerManager.Instance.currentPlayerObject.SetActive(true);
 
-		}
-		else if (state == PlayerState.Hidden)
-		{
-			SetPlayerDefault(false);
-		}
-		else if(state == PlayerState.Interacting )
-		{
-			camera.gameObject.SetActive(false);
-			PlayerManager.Instance.isMoving = false;
-			PlayerManager.Instance.isRaycasting = false;
-			Cursor.lockState = CursorLockMode.None;
-		}
-		//else if(state == PlayerState.Reading)
-		//{
-		//	isMoving = false;
-		//}
-		//Debug.Log(PlayerManager.Instance.isMoving);
+	//	}
+	//	else if (state == PlayerState.Hidden)
+	//	{
+	//		SetPlayerDefault(false);
+	//	}
+	//	else if(state == PlayerState.Interacting )
+	//	{
+	//		camera.gameObject.SetActive(false);
+	//		PlayerManager.Instance.isMoving = false;
+	//		PlayerManager.Instance.isRaycasting = false;
+	//		Cursor.lockState = CursorLockMode.None;
+	//	}
+	//	//else if(state == PlayerState.Reading)
+	//	//{
+	//	//	isMoving = false;
+	//	//}
+	//	//Debug.Log(PlayerManager.Instance.isMoving);
 
-	}
+	//}
 
 	private void ResetAnimation()
 	{

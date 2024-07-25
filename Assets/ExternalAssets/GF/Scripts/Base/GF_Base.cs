@@ -71,7 +71,7 @@ public class Level_Data {
 [System.Serializable]
 public class Player_Attributes{
 	public GameObject PlayerObject;
-    public PlayerController PlayerController;
+    public CanvasGroup PlayerControls;
 }
 
 

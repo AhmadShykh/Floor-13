@@ -1,8 +1,7 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine.SceneManagement;
 using System;
+using UnityEngine;
 
 public class GF_GameController : MonoBehaviour {
 
@@ -55,6 +54,13 @@ public class GF_GameController : MonoBehaviour {
 	
 	[HideInInspector]
 	public bool TimerPaused = false;
+
+
+
+	private void Awake()
+	{
+		PlayerManager.Instance.playerStateChangeEvent += PlayerStateUpdated;
+	}
 
 	#region debug
 
@@ -160,7 +166,7 @@ public class GF_GameController : MonoBehaviour {
 
 			}
         } else if (Players.Length == 0) {
-			Debug.LogError ("No Players have been assigned in the inspector !");
+			Debug.LogError("No Players have been assigned in the inspector !");
         }
 
 		//Reset Finish Points
@@ -255,7 +261,7 @@ public class GF_GameController : MonoBehaviour {
 			PlayerManager.Instance.UpdatePlayerState(PlayerState.Default);
 
 			Debug.Log("Player Set");
-			//SwitchControls();
+			SwitchControls();
 			ActivatePlayer(currentPlayer);
 		}
 
@@ -289,20 +295,25 @@ public class GF_GameController : MonoBehaviour {
 		}
 	}
 
-	//void SwitchControls (){
-	//	for (int i = 0; i < Players.Length; i++){
-	//		if (i == currentPlayer){
-	//			Players [i].PlayerObject.SetActive (true);
-	//			Players [i].PlayerControls.alpha = 1;
-	//			Players [i].PlayerControls.interactable = true;
-	//			Players [i].PlayerControls.blocksRaycasts = true;
-	//		} else{
-	//			Players [i].PlayerControls.alpha = 0;
-	//			Players [i].PlayerControls.interactable = false;
-	//			Players [i].PlayerControls.blocksRaycasts = false;
-	//		}
-	//	}
-	//}
+	void SwitchControls()
+	{
+		for (int i = 0; i < Players.Length; i++)
+		{
+			if (i == currentPlayer)
+			{
+				Players[i].PlayerObject.SetActive(true);
+				Players[i].PlayerControls.alpha = 1;
+				Players[i].PlayerControls.interactable = true;
+				Players[i].PlayerControls.blocksRaycasts = true;
+			}
+			else
+			{
+				Players[i].PlayerControls.alpha = 0;
+				Players[i].PlayerControls.interactable = false;
+				Players[i].PlayerControls.blocksRaycasts = false;
+			}
+		}
+	}
 
 	#endregion
 
@@ -511,4 +522,36 @@ public class GF_GameController : MonoBehaviour {
 		Game_Elements.LoadingScreen.SetActive (true);
 		SceneManager.LoadScene (PreviousScene.ToString ());
     }
+
+	public void PlayerStateUpdated(PlayerState state)
+	{
+		switch (state)
+		{
+			case PlayerState.Default:
+				PlayerManager.Instance.isMoving = true;
+				PlayerManager.Instance.isRaycasting = true;
+				Players[currentPlayer - 1].PlayerControls.GetComponent<PlayerController>().camera.SetActive(true);
+				PlayerManager.Instance.currentPlayerObject.SetActive(true);
+				break;
+			case PlayerState.Reading:
+				PlayerManager.Instance.isMoving = false;
+				PlayerManager.Instance.isRaycasting = false;
+				
+				break;
+			case PlayerState.Hidden:
+				PlayerManager.Instance.currentPlayerObject.SetActive(false);
+				break;
+			case PlayerState.Interacting:
+				PlayerManager.Instance.isMoving = false;
+				PlayerManager.Instance.isRaycasting = false;
+				Players[currentPlayer - 1].PlayerControls.GetComponent<PlayerController>().camera.SetActive(false);
+				break;
+		}
+	}
+
+
+	private void OnDestroy()
+	{
+		PlayerManager.Instance.playerStateChangeEvent -= PlayerStateUpdated;
+	}
 }

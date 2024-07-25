@@ -18,9 +18,9 @@ public class PlayerInteract : MonoBehaviour
 	//[Header("Interacted Object")]
 	//[SerializeField] GameObject torch;
 
-	string[] interactingObjs = { "HidingObject", "Battery","Collectables" ,"Safe"};
+	string[] interactingObjs = { "HidingObject", "Battery","Collectables" ,"Safe","PuzzlePart"};
 
-	string[] highlightObjs = { "Battery", "Collectables" };
+	string[] highlightObjs = { "Battery", "Collectables", "PuzzlePart" };
 
 	GameObject previousObj = null;
 	GameObject _interactedWith;

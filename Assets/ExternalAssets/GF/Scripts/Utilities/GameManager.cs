@@ -51,6 +51,8 @@ public class GameManager {
 		GameObject.FindGameObjectWithTag ("GameController").GetComponent<GF_GameController> ().TimerPaused = true;
 	}
 
+
+
 	public void ResumeTimer(){
 		GameObject.FindGameObjectWithTag ("GameController").GetComponent<GF_GameController> ().TimerPaused = false;
 	}

@@ -10,6 +10,8 @@ using UnityEngine.UI;
 public class CanvasLogic : MonoBehaviour
 {
 	[Header("Canvas Settings")]
+
+	// 0: description, 1: colletable
 	[SerializeField] GameObject[] CanvasObjects;
 
 	[Header("Canvas Childs")]
@@ -25,16 +27,16 @@ public class CanvasLogic : MonoBehaviour
 
 
 	//private GameObject _player;
-	bool canvasShowing = false;
-
+	//bool canvasShowing = false;
+	int currentCanvas = -1;
 
 	private void Awake()
 	{
 		// Initializing Collectables Manager && Canvas Manager 
-		CollectablesManager manager = CollectablesManager.Instance;
-		CanvasManager canvasManager = CanvasManager.Instance;
+		CollectablesManager collectablesManager = CollectablesManager.Instance;
+		//CanvasManager canvasManager = CanvasManager.Instance;
 
-		CanvasManager.Instance.OnCanvasChanged += CanvasChanged;
+		//CanvasManager.Instance.OnCanvasChanged += CanvasChanged;
 		CollectablesManager.Instance.AddCollectablesAction += AddCollectable;
 
 		//_player = GameObject.FindGameObjectWithTag("Player");
@@ -42,46 +44,48 @@ public class CanvasLogic : MonoBehaviour
 	}
 
 
-	private void CanvasChanged(CanvasTypes type)
-	{
+	//private void CanvasChanged(CanvasTypes type)
+	//{
 
-		// If the user was reading then set the player state to default 
-		// but if the playing was checking out collectables than don't because 
-		// collectables are displayed in overlay thus could cause multiple player states at once
+	//	// If the user was reading then set the player state to default 
+	//	// but if the playing was checking out collectables than don't because 
+	//	// collectables are displayed in overlay thus could cause multiple player states at once
 
-		if (CanvasManager.Instance.prevCanvas != CanvasTypes.None)
-			ToggleCanvas(false, (int)CanvasManager.Instance.prevCanvas - 1);
-		else if (CanvasManager.Instance.prevCanvas == CanvasTypes.CollectableDescription)
-			PlayerManager.Instance.UpdatePlayerState(PlayerState.Default);
+	//	if (CanvasManager.Instance.prevCanvas != CanvasTypes.None)
+	//		ToggleCanvas(false, (int)CanvasManager.Instance.prevCanvas - 1);
+	//	else if (CanvasManager.Instance.prevCanvas == CanvasTypes.CollectableDescription)
+	//		PlayerManager.Instance.UpdatePlayerState(PlayerState.Default);
 
-		if(type == CanvasTypes.None)
-		{
-			GameManager.Instance.ResumeGame(); 
-			PlayerManager.Instance.UpdatePlayerState(PlayerManager.Instance.playerCurrentState);
-		}
-		else
-		{
-			GameManager.Instance.PauseGame();
-			Cursor.lockState = CursorLockMode.None;
-			if (type == CanvasTypes.CollectablesCanvas)
-			{
-				ToggleCanvas(true, 1);
-			}
-			else if (type == CanvasTypes.CollectableDescription)
-			{
-				ToggleCanvas(true, 0);
-				//PlayerManager.Instance.UpdatePlayerState(PlayerState.Reading);
-			}
+	//	if(type == CanvasTypes.None)
+	//	{
+	//		GameManager.Instance.ResumeGame(); 
+	//		PlayerManager.Instance.UpdatePlayerState(PlayerManager.Instance.playerCurrentState);
+	//	}
+	//	else
+	//	{
+	//		GameManager.Instance.PauseGame();
+	//		Cursor.lockState = CursorLockMode.None;
+	//		if (type == CanvasTypes.CollectablesCanvas)
+	//		{
+	//			ToggleCanvas(true, 1);
+	//		}
+	//		else if (type == CanvasTypes.CollectableDescription)
+	//		{
+	//			ToggleCanvas(true, 0);
+	//			//PlayerManager.Instance.UpdatePlayerState(PlayerState.Reading);
+	//		}
 
-		}
+	//	}
 		
 
-	}
+	//}
 
 
 	private void ToggleCanvas(bool active, int i)
 	{
-		CanvasObjects[i].SetActive(active);
+		CanvasObjects[currentCanvas].SetActive(!active);
+		if(i != -1)
+			CanvasObjects[i].SetActive(active);
 	}
 
 	private void Start()
@@ -103,26 +107,35 @@ public class CanvasLogic : MonoBehaviour
 		HandleInputs();
 	}
 
-	public void UpdateCanvas(int type)
-	{
-		CanvasManager.Instance.UpdateGameCanvas((CanvasTypes)type);
-	}
+	//public void UpdateCanvas(int type)
+	//{
+	//	CanvasManager.Instance.UpdateGameCanvas((CanvasTypes)type);
+	//}
 
 	private void HandleInputs()
 	{
 		if (Input.GetKeyDown(KeyCode.C) )
 		{
-			if(CanvasManager.Instance.currentCanvas == CanvasTypes.CollectablesCanvas)
-				CanvasManager.Instance.UpdateGameCanvas(CanvasTypes.None);
+			if (currentCanvas == -1)
+				ToggleCanvas(true, 1);
 			else
-				CanvasManager.Instance.UpdateGameCanvas(CanvasTypes.CollectablesCanvas);
+				TurnOffCanvas();
 		}
+	}
+
+	public void TurnOffCanvas()
+	{
+		ToggleCanvas(true, -1);
+		PlayerManager.Instance.UpdatePlayerState(PlayerManager.Instance.playerPreviousState);
 	}
 
 	void AddCollectable(Collectable collectable)
 	{
+		ToggleCanvas(true, 0);
+
 		AddBtnToCollectablesArea(collectable);
 
+			
 		CanvasObjects[1].transform.Find("TextPanel/TextArea").GetComponent<TextMeshProUGUI>().text = collectable.collectableText;
 
 		//ToggleTextCanvas(true);

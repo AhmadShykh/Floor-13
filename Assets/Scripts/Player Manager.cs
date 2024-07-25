@@ -14,6 +14,7 @@ public class PlayerManager
 
     public Action<PlayerState> playerStateChangeEvent;
     public PlayerState playerCurrentState;
+    public PlayerState playerPreviousState;
 
     //public bool isHidden;
     public PlayerDirection playerXDirection;
@@ -51,7 +52,8 @@ public class PlayerManager
 
     public void UpdatePlayerState(PlayerState playerState)
     {
-        playerCurrentState = playerState;
+        playerPreviousState = playerCurrentState;
+		playerCurrentState = playerState;
 
         playerStateChangeEvent?.Invoke(playerState);
 
@@ -97,7 +99,7 @@ public class PlayerManager
 public enum PlayerState
 {
     Default,
-    //Reading,
+    Reading,
     Hidden,
     Interacting,
 }

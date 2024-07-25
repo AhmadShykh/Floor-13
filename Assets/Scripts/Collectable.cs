@@ -27,8 +27,9 @@ public class Collectable : MonoBehaviour,InteractableObject
 
 	public void Interacting()
 	{
+		PlayerManager.Instance.UpdatePlayerState(PlayerState.Reading);
 		CollectablesManager.Instance.AddCollectable(this);
-		CanvasManager.Instance.UpdateGameCanvas(CanvasTypes.CollectableDescription);
+		//CanvasManager.Instance.UpdateGameCanvas(CanvasTypes.CollectableDescription);
 		//PlayerManager.Instance.UpdatePlayerState(PlayerState.Reading);
 	}
 

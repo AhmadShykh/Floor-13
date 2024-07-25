@@ -56,12 +56,10 @@ public class Locker : MonoBehaviour, InteractableObject
 		}
 		else
 		{
-			Debug.Log("Locker Opened");
+			//Debug.Log("Locker Opened");
 			GetComponent<Animator>().Play("SafeOpen");
 		}
 	}
-
-
 
 	public void Interacting()
 	{

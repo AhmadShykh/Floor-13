@@ -21,11 +21,11 @@ public class BatteryPowerPickup : MonoBehaviour, InteractableObject
 		GetComponent<Renderer>().material.color = Color.yellow;
 	}
 
-	public void InitiateInteractingSequence()
-	{
+	//public void InitiateInteractingSequence()
+	//{
 		
 		
-	}
+	//}
 
 	public void Interacting()
 	{

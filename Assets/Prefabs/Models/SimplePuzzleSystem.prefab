@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 4169342687815591584}
   m_Layer: 0
   m_Name: Trigger
-  m_TagString: PuzzlePart
+  m_TagString: Highlight
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -141,7 +141,7 @@ GameObject:
   - component: {fileID: 529321033475376242}
   m_Layer: 0
   m_Name: Trigger
-  m_TagString: PuzzlePart
+  m_TagString: Highlight
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

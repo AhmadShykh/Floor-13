@@ -2,16 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using System;
+using UnityEngine.SubsystemsImplementation;
 
-public class Collectable : MonoBehaviour,InteractableObject
+public class Collectable : CollectableBase,InteractableObject
 {
     
-
-	public string collectableName = "";
-	public CollectableTypes type;
-    public string collectableText;
-
-
     //private GameObject _textShownCanvas;
     //private GameObject _player;
 
@@ -29,6 +25,12 @@ public class Collectable : MonoBehaviour,InteractableObject
 	{
 		PlayerManager.Instance.UpdatePlayerState(PlayerState.Reading);
 		CollectablesManager.Instance.AddCollectable(this);
+
+		if (Array.Exists(destroyable, obj => obj == type))
+		{
+			Destroy(gameObject);
+		}
+		
 		//CanvasManager.Instance.UpdateGameCanvas(CanvasTypes.CollectableDescription);
 		//PlayerManager.Instance.UpdatePlayerState(PlayerState.Reading);
 	}
@@ -46,4 +48,5 @@ public enum CollectableTypes
 {
 	Paper = 0,
 	Trophy = 1,
+	Key = 2
 }

@@ -525,26 +525,34 @@ public class GF_GameController : MonoBehaviour {
 
 	public void PlayerStateUpdated(PlayerState state)
 	{
+		Debug.Log(currentPlayer);
 		switch (state)
 		{
 			case PlayerState.Default:
 				PlayerManager.Instance.isMoving = true;
 				PlayerManager.Instance.isRaycasting = true;
-				Players[currentPlayer - 1].PlayerControls.GetComponent<PlayerController>().camera.SetActive(true);
+				Players[currentPlayer ].PlayerControls.GetComponent<PlayerController>().camera.SetActive(true);
 				PlayerManager.Instance.currentPlayerObject.SetActive(true);
+				Cursor.lockState = CursorLockMode.Locked;
 				break;
 			case PlayerState.Reading:
 				PlayerManager.Instance.isMoving = false;
 				PlayerManager.Instance.isRaycasting = false;
-				
+				Cursor.lockState = CursorLockMode.None;
+
 				break;
 			case PlayerState.Hidden:
+				PlayerManager.Instance.isMoving = false;
+				PlayerManager.Instance.isRaycasting = false;
 				PlayerManager.Instance.currentPlayerObject.SetActive(false);
+				Cursor.lockState = CursorLockMode.Locked;
+
 				break;
 			case PlayerState.Interacting:
 				PlayerManager.Instance.isMoving = false;
 				PlayerManager.Instance.isRaycasting = false;
-				Players[currentPlayer - 1].PlayerControls.GetComponent<PlayerController>().camera.SetActive(false);
+				Players[currentPlayer].PlayerControls.GetComponent<PlayerController>().camera.SetActive(false);
+				Cursor.lockState = CursorLockMode.None;
 				break;
 		}
 	}

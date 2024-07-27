@@ -4,12 +4,9 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Battery
-  - HidingObject
-  - Collectables
   - TextCanvas
-  - Safe
-  - PuzzlePart
+  - Highlight
+  - NonInteract
   layers:
   - Default
   - TransparentFX
@@ -17,7 +14,7 @@ TagManager:
   - 
   - Water
   - UI
-  - 
+  - Interactable
   - 
   - 
   - 

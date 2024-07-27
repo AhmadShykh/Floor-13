@@ -83,9 +83,11 @@ public class CanvasLogic : MonoBehaviour
 
 	private void ToggleCanvas(bool active, int i)
 	{
-		CanvasObjects[currentCanvas].SetActive(!active);
+		if(currentCanvas != -1)
+			CanvasObjects[currentCanvas].SetActive(!active);
 		if(i != -1)
 			CanvasObjects[i].SetActive(active);
+		currentCanvas = i; 
 	}
 
 	private void Start()
@@ -116,8 +118,11 @@ public class CanvasLogic : MonoBehaviour
 	{
 		if (Input.GetKeyDown(KeyCode.C) )
 		{
-			if (currentCanvas == -1)
+			if (currentCanvas != 1)
+			{
+				PlayerManager.Instance.UpdatePlayerState(PlayerState.Reading);
 				ToggleCanvas(true, 1);
+			}
 			else
 				TurnOffCanvas();
 		}
@@ -131,12 +136,13 @@ public class CanvasLogic : MonoBehaviour
 
 	void AddCollectable(Collectable collectable)
 	{
+		CanvasObjects[0].transform.Find("TextPanel/TextArea").GetComponent<TextMeshProUGUI>().text = collectable.collectableText;
+		
 		ToggleCanvas(true, 0);
 
 		AddBtnToCollectablesArea(collectable);
 
 			
-		CanvasObjects[1].transform.Find("TextPanel/TextArea").GetComponent<TextMeshProUGUI>().text = collectable.collectableText;
 
 		//ToggleTextCanvas(true);
 

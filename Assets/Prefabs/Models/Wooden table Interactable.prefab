@@ -273,9 +273,9 @@ GameObject:
   - component: {fileID: 6394243528969865777}
   - component: {fileID: 7641885278507291432}
   - component: {fileID: 2369230166226871079}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Wooden table Interactable
-  m_TagString: HidingObject
+  m_TagString: NonInteract
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

@@ -18,9 +18,12 @@ public class PlayerInteract : MonoBehaviour
 	//[Header("Interacted Object")]
 	//[SerializeField] GameObject torch;
 
-	string[] interactingObjs = { "HidingObject", "Battery","Collectables" ,"Safe","PuzzlePart"};
+	//string[] interactingObjs = { "Interactable"};
+	public LayerMask interableLayers;
 
-	string[] highlightObjs = { "Battery", "Collectables", "PuzzlePart" };
+	string[] highlightObjs = { "Highlight" };
+
+	string[] nonInteractableObjs = { "NonInteract"};
 
 	GameObject previousObj = null;
 	GameObject _interactedWith;
@@ -45,25 +48,27 @@ public class PlayerInteract : MonoBehaviour
 		{ 
 			// Draw the ray in the Scene view for debugging purposes
 			Debug.DrawRay(torchRay.origin, torchRay.direction * _raycastLength, Color.red);
-
-			if (Physics.Raycast(torchRay, out RaycastHit objHit, _raycastLength))
+			Debug.Log("H");
+			if (Physics.Raycast(torchRay, out RaycastHit objHit, _raycastLength,interableLayers))
 			{
 				GameObject hitGameobject = objHit.collider.gameObject;
-				if(Array.Exists(interactingObjs,objTag => objTag == hitGameobject.tag))
+				//if(Array.Exists(interactingObjs,objTag => objTag == hitGameobject.tag))
+				//{
+
+				//Debug.Log($"Object Collided with: {hitGameobject.tag}");
+				if (interacted && _interactedWith != hitGameobject)
 				{
-					//Debug.Log($"Object Collided with: {hitGameobject.tag}");
-					if (interacted && _interactedWith != hitGameobject)
-					{
+					if(Array.Exists(nonInteractableObjs, objTag => objTag == hitGameobject.tag))
 						_interactedWith = hitGameobject;
-						_interactedWith.GetComponent<InteractableObject>().Interacting();
+					objHit.collider.GetComponent<InteractableObject>().Interacting();
 						
-					}
-					if (Array.Exists(highlightObjs, objTag => objTag == hitGameobject.tag))
-					{
-						hitGameobject.GetComponent<Renderer>().material.color = Color.yellow;
-						_interactedWith = null;
-					}
 				}
+				if (Array.Exists(highlightObjs, objTag => objTag == hitGameobject.tag))
+				{
+					hitGameobject.GetComponent<Renderer>().material.color = Color.yellow;
+				}
+
+				//}
 
 				// Changing back battery color if its not look at by player
 				if (previousObj != null && Array.Exists(highlightObjs, objTag => objTag == previousObj.tag) && previousObj != hitGameobject.gameObject)

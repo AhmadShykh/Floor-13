@@ -115,9 +115,9 @@ GameObject:
   - component: {fileID: 6800197963465380368}
   - component: {fileID: 8899180545483023377}
   - component: {fileID: 843213103617061060}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Bed with person with blood interactable
-  m_TagString: HidingObject
+  m_TagString: NonInteract
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

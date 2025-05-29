@@ -50,7 +50,7 @@ namespace PuzzleSystem
             onSolutionEvent.Invoke();
             OnSolution();
         }
-
+                
         /// <summary>
         /// The method invokes the events that represent the solved puzzle.
         /// </summary>

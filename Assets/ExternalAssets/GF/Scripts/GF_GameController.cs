@@ -2,8 +2,12 @@
 using UnityEngine.SceneManagement;
 using System;
 using UnityEngine;
+using VoxelBusters.Utility;
 
 public class GF_GameController : MonoBehaviour {
+
+	[Header("Elevator Settings")]
+	[SerializeField] GameObject elevatorObject;
 
 	[Header ("Scene Selection")]
 	public Scenes PreviousScene;
@@ -11,6 +15,9 @@ public class GF_GameController : MonoBehaviour {
 
 	[Header("Main Player", order = 1)]
 	public Player_Attributes[] Players;
+
+	[Header("All Enemies", order = 1)]
+	public Enemy_Attributes[] Enemies;
 	//public PlayerController Player;
 
 	[Header ("Game Dialogues")]
@@ -34,6 +41,10 @@ public class GF_GameController : MonoBehaviour {
 	[Header ("Ad Sequence ID")]
 	public int SequenceID;
 
+	[Header("Game Settings")]
+	public float enemyHideTillIntensity;
+
+
 	//Events	
 	
 	//Local Variables
@@ -48,9 +59,11 @@ public class GF_GameController : MonoBehaviour {
 	string time;
 	private int currentLevel;
 	private int currentPlayer;
+	private int currentEnemy = 1;
 	private int FinishCount = 0;
 	private bool isTimerEnabled;
 	private int Rewardamount = 0;
+	private bool elevatorOpen = false;
 	
 	[HideInInspector]
 	public bool TimerPaused = false;
@@ -128,6 +141,10 @@ public class GF_GameController : MonoBehaviour {
 
 		//SpawnPlayer();
 		SpawnPlayers ();
+
+//		currentEnemy = Levels[currentLevel-1].LevelEnemy.EnemyIndex;
+
+		SpawnEnemy ();
 		ActivateLevel ();
 		if (Levels [currentLevel - 1].Objectives.Length > 0) {
 			ActivateFinishPoint ();
@@ -140,6 +157,13 @@ public class GF_GameController : MonoBehaviour {
 		GF_AdsManager.HideBanner ();
     }
 
+	private void LoadEnemyHidingLocations(int enemyNum)
+	{
+
+		Enemies[enemyNum].EnemyObject.GetComponent<EnemyController>().SetHidingLocations(Levels[currentLevel-1].hidingLocations);
+		EnemyManager.Instance.UpdateEenemyState(EnemyStates.Hiding);
+	}
+	
 	void InitializeGame () {
 		SaveData.Instance = new SaveData ();
 		GF_SaveLoad.LoadProgress ();
@@ -236,11 +260,79 @@ public class GF_GameController : MonoBehaviour {
 			Debug.LogError ("Player->" + (currentPlayer) + " has not been assigned in the inspector !");
 		}
 	}
+	void SpawnEnemy()
+	{
+		if (Enemies.Length > 0 && Enemies.Length > currentEnemy - 1)
+		{
+
+			//Primary player Spawn
+			if (Levels[currentLevel - 1].LevelEnemy.EnemyIndex >= 0 && Levels[currentLevel - 1].LevelEnemy.EnemyIndex < Enemies.Length)
+			{
+				if (GameManager.Instance.SessionStatus == 1)
+				{
+					SetPlayerPosition(Enemies[currentEnemy - 1].EnemyObject, Levels[currentLevel - 1].LevelEnemy.SpawnPoint);
+					SetUpEnemy(currentEnemy-1,true);
+					//SwitchPlayer((currentPlayer - 1), true);
+				}
+				else
+				{
+					SetPlayerPosition(Enemies[Levels[currentLevel - 1].LevelEnemy.EnemyIndex].EnemyObject, Levels[currentLevel - 1].LevelEnemy.SpawnPoint);
+					SetUpEnemy(Levels[currentLevel - 1].LevelEnemy.EnemyIndex, true);
+
+					//SwitchPlayer(Levels[currentLevel - 1].PrimaryPlayer.PlayerIndex, true);
+				}
+
+			}
+			else
+			{
+				Debug.LogError("Enemy at Index->" + (Levels[currentLevel - 1].LevelEnemy.EnemyIndex) + " has not been assigned in the inspector !");
+			}
+
+			
+		}
+		else if (Enemies.Length <= currentEnemy - 1 && Enemies.Length != 0)
+		{
+			Debug.LogError("Enemy->" + (currentEnemy) + " has not been assigned in the inspector !");
+		}
+	}
+
+	private void SetUpEnemy(int enemyNum, bool enemyState)
+	{
+		foreach(Enemy_Attributes obj in Enemies)
+		{
+			obj.EnemyObject.SetActive(false);
+		}
+
+		Enemies[enemyNum].EnemyObject.SetActive(enemyState);
+		LoadEnemyHidingLocations(enemyNum);
+
+	}
 
 	void SetPlayerPosition (GameObject Player, Transform Position){
 		Player.transform.position = Position.position;
 		Player.transform.rotation = Position.rotation;
 	}
+
+	public void CallElevatorSequence()
+	{
+		if (!elevatorOpen)
+		{
+			GameManager.Instance.TaskComplete();
+			elevatorOpen = true;
+			elevatorObject.GetComponent<Animator>().SetTrigger("Open");
+		}
+		else
+		{
+			elevatorObject.GetComponent<Animator>().SetTrigger("Close");
+			GameManager.Instance.TaskComplete();			
+		}
+	}
+
+	//IEnumerator WaitForElevatorCloseAnim()
+	//{
+	//	yield return new 
+	//}
+
 
 	public void SwitchPlayer(int PlayerIndex, bool isActive)
 	{
@@ -257,7 +349,7 @@ public class GF_GameController : MonoBehaviour {
 			currentPlayer = PlayerIndex;
 			
 			// Setting Player Default Settings when player switches
-			PlayerManager.Instance.currentPlayerObject = Players[currentPlayer ].PlayerObject;
+			PlayerManager.Instance.currentPlayerObject = Players[Levels[currentLevel - 1].PrimaryPlayer.PlayerIndex].PlayerObject;
 			PlayerManager.Instance.UpdatePlayerState(PlayerState.Default);
 
 			Debug.Log("Player Set");
@@ -384,6 +476,7 @@ public class GF_GameController : MonoBehaviour {
 		ObjectivesLeft = GameManager.Instance.Objectives;
 
 		if (GameManager.Instance.Objectives > 0 && GameManager.Instance.GameStatus != "Loose") {
+		
 			if (Levels [currentLevel - 1].Objectives.Length != 0)
 				ActivateFinishPoint ();
 			else
@@ -393,15 +486,22 @@ public class GF_GameController : MonoBehaviour {
 				ActivateFinishPoint ();
 			else
 				Debug.LogWarning ("No Objectives have been defined in the inspector !");
-
+		
 			//Calculate Reward
 			if (Levels [currentLevel - 1].GiveReward){
 				GiveRewards ();
 			}
-			DisableAudio ();
+
+			Cursor.lockState = CursorLockMode.None;
+			Players[Levels[currentLevel - 1].PrimaryPlayer.PlayerIndex].PlayerControls.GetComponent<PlayerController>().enabled = false;
+
+			DisableAudio();
 			FX_AudioSource.GetComponent<AudioSource> ().PlayOneShot (SFX_Elements.LevelCompleteSFX);
 			StartCoroutine (OnLevelStatus ());
         } else if (GameManager.Instance.GameStatus == "Loose") {
+
+			Cursor.lockState = CursorLockMode.None;
+			Players[Levels[currentLevel - 1].PrimaryPlayer.PlayerIndex].PlayerControls.GetComponent<PlayerController>().enabled = false;
 			DisableAudio ();
 			if (ReasonBased)
 				SetGameOverReason (reasonIndex);
@@ -531,7 +631,7 @@ public class GF_GameController : MonoBehaviour {
 			case PlayerState.Default:
 				PlayerManager.Instance.isMoving = true;
 				PlayerManager.Instance.isRaycasting = true;
-				Players[currentPlayer ].PlayerControls.GetComponent<PlayerController>().camera.SetActive(true);
+				Players[Levels[currentLevel - 1].PrimaryPlayer.PlayerIndex].PlayerControls.GetComponent<PlayerController>().camera.SetActive(true);
 				PlayerManager.Instance.currentPlayerObject.SetActive(true);
 				Cursor.lockState = CursorLockMode.Locked;
 				break;
@@ -551,7 +651,7 @@ public class GF_GameController : MonoBehaviour {
 			case PlayerState.Interacting:
 				PlayerManager.Instance.isMoving = false;
 				PlayerManager.Instance.isRaycasting = false;
-				Players[currentPlayer].PlayerControls.GetComponent<PlayerController>().camera.SetActive(false);
+				Players[Levels [currentLevel - 1].PrimaryPlayer.PlayerIndex].PlayerControls.GetComponent<PlayerController>().camera.SetActive(false);
 				Cursor.lockState = CursorLockMode.None;
 				break;
 		}
@@ -561,5 +661,19 @@ public class GF_GameController : MonoBehaviour {
 	private void OnDestroy()
 	{
 		PlayerManager.Instance.playerStateChangeEvent -= PlayerStateUpdated;
+	}
+
+	internal bool CheckTorchOn()
+	{
+		GameObject obj = FindObjectOfType<ElectricTorchOnOff>().gameObject;
+		if (obj)
+		{
+			return (obj.GetComponent<ElectricTorchOnOff>().IsTorchOn(enemyHideTillIntensity));
+		}
+		else
+		{
+			Debug.LogError("No Torch In Scene");
+			return false;
+		}
 	}
 }

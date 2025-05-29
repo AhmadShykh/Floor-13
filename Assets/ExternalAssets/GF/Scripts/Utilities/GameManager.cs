@@ -35,6 +35,8 @@ public class GameManager {
 
 	public void GameLoose(int reasonIndex=0){
 		if (GameStatus != "Loose"){
+			//Cursor.lockState = CursorLockMode.None;
+
 			GameStatus = "Loose";
 			GameObject.FindGameObjectWithTag ("GameController").GetComponent<GF_GameController> ().OnLevelCheck (reasonIndex);
 		} else{

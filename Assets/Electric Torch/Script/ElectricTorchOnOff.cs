@@ -7,6 +7,7 @@
 
 using CodeMonkey.HealthSystemCM;
 using System;
+using System.Runtime.InteropServices.WindowsRuntime;
 using Unity.VisualScripting;
 using UnityEditor.PackageManager;
 using UnityEngine;
@@ -188,4 +189,10 @@ public class ElectricTorchOnOff : MonoBehaviour
 
 		InputKey();
 	}
+
+	public bool IsTorchOn(float intensityValue =0 )
+	{
+		return intensityLight > intensityValue && _flashLightOn;
+	}
+
 }

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using System.Collections.Generic;
 
 public enum Scenes {
     SplashScreen,
@@ -39,6 +40,13 @@ public class PlayerSpawn{
 }
 
 [System.Serializable]
+public class EnemySpawn
+{
+	public int EnemyIndex;
+	public Transform SpawnPoint;
+}
+
+[System.Serializable]
 public class ItemSpawner{
 	public GameObject Item;
 	public Transform SpawnPoint;
@@ -51,6 +59,8 @@ public class Level_Data {
 	public PlayerSpawn PrimaryPlayer;
 	public bool EnableSecondarySpawns;
 	public PlayerSpawn[] SecondaryPlayers;
+	[Header("Enemy Spawn")]
+	public EnemySpawn LevelEnemy;
 	[Header("Items Spawn")]
 	public ItemSpawner[] Items;
 	[Header("Tasks")]
@@ -66,6 +76,10 @@ public class Level_Data {
 	[Header("Level Reward")]
 	public bool GiveReward;
 	public Reward_Data[] RewardLevels;
+
+    [Header("Hiding Locations")]
+	public List<Transform> hidingLocations = new List<Transform>();
+
 }
 
 [System.Serializable]
@@ -74,6 +88,11 @@ public class Player_Attributes{
     public CanvasGroup PlayerControls;
 }
 
+[System.Serializable]
+public class Enemy_Attributes
+{
+	public GameObject EnemyObject;
+}
 
 [System.Serializable]
 public class Reward_Data {

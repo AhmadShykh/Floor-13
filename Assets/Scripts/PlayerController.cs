@@ -21,7 +21,7 @@ public class PlayerController : MonoBehaviour
 	[Header("Movement Settings")]
 	[SerializeField] float accelDeaccel;
 	[SerializeField] float speed;
-	[SerializeField] GameObject[] bodyMesh;
+	//[SerializeField] GameObject[] bodyMesh;
 
 	[Header("Body Rotation Settings")]
 	[SerializeField] float degreePerSec;
@@ -126,11 +126,11 @@ public class PlayerController : MonoBehaviour
 	}
 
 
-	private void HidePlayer(bool val)
-	{
-		foreach (GameObject obj in bodyMesh)
-			obj.SetActive(!val);
-	}
+	//private void HidePlayer(bool val)
+	//{
+	//	foreach (GameObject obj in bodyMesh)
+	//		obj.SetActive(!val);
+	//}
 
 
 	// Update is called once per frame

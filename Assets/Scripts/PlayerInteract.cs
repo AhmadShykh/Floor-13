@@ -46,36 +46,44 @@ public class PlayerInteract : MonoBehaviour
 		}
 		else if (PlayerManager.Instance.isRaycasting)
 		{ 
+
 			// Draw the ray in the Scene view for debugging purposes
 			Debug.DrawRay(torchRay.origin, torchRay.direction * _raycastLength, Color.red);
-			Debug.Log("H");
+			//Debug.Log("H");
 			if (Physics.Raycast(torchRay, out RaycastHit objHit, _raycastLength,interableLayers))
 			{
 				GameObject hitGameobject = objHit.collider.gameObject;
 				//if(Array.Exists(interactingObjs,objTag => objTag == hitGameobject.tag))
 				//{
-
-				//Debug.Log($"Object Collided with: {hitGameobject.tag}");
-				if (interacted && _interactedWith != hitGameobject)
+				if(hitGameobject.tag == "Enemy")
 				{
-					if(Array.Exists(nonInteractableObjs, objTag => objTag == hitGameobject.tag))
-						_interactedWith = hitGameobject;
-					objHit.collider.GetComponent<InteractableObject>().Interacting();
+					ChaseEnemy();
+				}
+				else
+				{
+					//Debug.Log($"Object Collided with: {hitGameobject.tag}");
+					if (interacted && _interactedWith != hitGameobject)
+					{
+						if(Array.Exists(nonInteractableObjs, objTag => objTag == hitGameobject.tag))
+							_interactedWith = hitGameobject;
+						objHit.collider.GetComponent<InteractableObject>().Interacting();
 						
-				}
-				if (Array.Exists(highlightObjs, objTag => objTag == hitGameobject.tag))
-				{
-					hitGameobject.GetComponent<Renderer>().material.color = Color.yellow;
-				}
+					}
+					if (Array.Exists(highlightObjs, objTag => objTag == hitGameobject.tag))
+					{
+						hitGameobject.GetComponent<Renderer>().material.color = Color.yellow;
+					}
 
-				//}
+					//}
 
-				// Changing back battery color if its not look at by player
-				if (previousObj != null && Array.Exists(highlightObjs, objTag => objTag == previousObj.tag) && previousObj != hitGameobject.gameObject)
-				{
-					previousObj.GetComponent<Renderer>().material.color = Color.white;
+					// Changing back battery color if its not look at by player
+					if (previousObj != null && Array.Exists(highlightObjs, objTag => objTag == previousObj.tag) && previousObj != hitGameobject.gameObject)
+					{
+						previousObj.GetComponent<Renderer>().material.color = Color.white;
+					}
+					previousObj = hitGameobject.gameObject;
+
 				}
-				previousObj = hitGameobject.gameObject;
 			}
 			else if (previousObj != null && Array.Exists(highlightObjs, objTag => objTag == previousObj.tag))
 				previousObj.GetComponent<Renderer>().material.color = Color.white;
@@ -85,4 +93,11 @@ public class PlayerInteract : MonoBehaviour
 		
 	}
 
+	private static void ChaseEnemy()
+	{
+		if (EnemyManager.Instance.enemyCurrentState != EnemyStates.Hiding && EnemyManager.Instance.enemyCurrentState != EnemyStates.Waiting &&  FindObjectOfType<GF_GameController>().CheckTorchOn())
+		{
+			EnemyManager.Instance.UpdateEenemyState(EnemyStates.Hiding);
+		}
+	}
 }
